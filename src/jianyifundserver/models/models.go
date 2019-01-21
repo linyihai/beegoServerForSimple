@@ -9,12 +9,12 @@ import (
 
 type UserContractInfo struct {
 	Id          int
-	Name        string    `json:"name"`
-	MailAddress string    `orm:"unique" json:"mailaddress"`
-	Title       string    `json:"title"`
-	Desc        string    `json:"desc"`
+	Name        string    `json:"name" valid:"Required"`
+	MailAddress string    `orm:"unique" json:"mailaddress" valid:"Email; MaxSize(100); Required"`
+	Title       string    `json:"title" valid:"Required"`
+	Desc        string    `json:"desc" valid:"Required"`
 	Created     time.Time `orm:"auto_now_add;type(datetime)"`
-	Updated     time.Time `orm:"auto_now;type(datetime)"`
+	Updated     time.Time `orm:"auto_now;type(datetime)" `
 }
 
 func init() {

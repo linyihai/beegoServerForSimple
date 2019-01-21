@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"jianyifundserver/models"
 	"time"
 
@@ -9,6 +8,8 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego/validation"
+	"log"
 )
 
 var o = orm.NewOrm()
@@ -29,18 +30,30 @@ func (this *UserContractController) Post() {
 		mailAddress := ob.MailAddress
 		desc := ob.Desc
 		title := ob.Title
-		if name == "" || mailAddress == "" || title == "" || desc == "" {
-			this.Data["json"] = "name, mailaddress, title, desc should not be blank"
+		valid := validation.Validation{}
+		b, err := valid.Valid(&ob)
+		if err != nil {
+			this.Data["json"] = err.Error()
+			this.ServeJSON()
+			return
+		}
+		if !b {
+			validFailMsg := "" 
+			for _, err := range valid.Errors {
+				log.Println(err.Key, err.Message)
+				validFailMsg = validFailMsg + err.Key + " " + err.Message + ";"
+			}
+			this.Data["json"] = validFailMsg
 		} else if created, id, err := o.ReadOrCreate(&ob, "MailAddress"); err == nil {
 			if created {
-				fmt.Println("New Insert an object. Id:", id)
+				log.Println("New Insert an object. Id:", id)
 			} else {
 				ob.Name = name
 				ob.MailAddress = mailAddress
 				ob.Desc = desc
 				ob.Title = title
 				if num, err := o.Update(&ob); err == nil {
-					fmt.Println(num)
+					log.Println(num)
 				}
 			}
 			if data, err := json.Marshal(&ob); err == nil {
