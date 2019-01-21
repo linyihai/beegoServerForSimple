@@ -9,5 +9,6 @@ import (
 func main() {
 	beego.BConfig.Listen.Graceful=false
 	beego.BConfig.Listen.HTTPPort = 8080
+	beego.SetLogFuncCall(true)
 	beego.Run()
 }
